@@ -1,6 +1,3 @@
-
-
-
 import { useState } from "react";
 
 function App() {
@@ -10,33 +7,37 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
 
-  const uploadPdf = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+const uploadPdf = async (e) => {
+  const input = e.target;
 
-    const formData = new FormData();
-    formData.append("file", file);
+  const file = input.files[0];
+  if (!file) return;
 
-    setUploading(true);
+  const formData = new FormData();
+  formData.append("file", file);
 
-    try {
-      const response = await fetch("http://127.0.0.1:8000/upload", {
-        method: "POST",
-        body: formData,
-      });
+  setUploading(true);
 
-      const data = await response.json();
-      alert(data.message);
-    } catch (error) {
-      console.error(error);
-      alert("Error uploading PDF");
-    }
+  try {
+    const response = await fetch("http://127.0.0.1:8000/upload", {
+      method: "POST",
+      body: formData,
+    });
 
-    setUploading(false);
-  };
+    const data = await response.json();
+    alert(data.message);
+  } catch (error) {
+    console.error(error);
+    alert("Error uploading PDF");
+  }
 
-  const askQuestion = async () => {
-    if (!question) return;
+  setUploading(false);
+
+  input.value = "";
+};
+
+  const askQuestion = async (customQuestion = question) => {
+    if (!customQuestion) return;
 
     setLoading(true);
 
@@ -47,13 +48,14 @@ function App() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          question: question,
+          question: customQuestion,
         }),
       });
 
       const data = await response.json();
 
-      setAnswer(data.answer);            
+      setAnswer(data.answer);
+
       if (data.answer.toLowerCase().includes("could not find")) {
         setSources([]);
       } else {
@@ -71,8 +73,7 @@ function App() {
     <div
       style={{
         minHeight: "100vh",
-        background:
-          "linear-gradient(to bottom right, #f4f8f0, #dcefd8)",
+        background: "linear-gradient(to bottom right, #f4f8f0, #dcefd8)",
         padding: "40px",
         fontFamily: "Arial",
       }}
@@ -115,6 +116,47 @@ function App() {
             >
               Ayurvedic Knowledge Assistant powered by Semantic AI
             </p>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+                gap: "15px",
+                marginTop: "30px",
+              }}
+            >
+              {[
+                ["📚", "Ayurveda PDFs", "Uploaded knowledge base"],
+                ["🧠", "Semantic Search", "FAISS vector retrieval"],
+                ["🌿", "Grounded AI", "Answers from uploaded texts"],
+              ].map((item, index) => (
+                <div
+                  key={index}
+                  style={{
+                    background: "#f7fcf5",
+                    padding: "18px",
+                    borderRadius: "16px",
+                    border: "1px solid #d7e8d1",
+                    textAlign: "center",
+                  }}
+                >
+                  <div style={{ fontSize: "28px" }}>{item[0]}</div>
+
+                  <strong style={{ color: "#245233" }}>{item[1]}</strong>
+
+                  <p
+                    style={{
+                      color: "#587062",
+                      marginBottom: 0,
+                      marginTop: "8px",
+                      fontSize: "14px",
+                    }}
+                  >
+                    {item[2]}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div
@@ -135,14 +177,32 @@ function App() {
               📚 Upload Ayurveda PDF
             </h2>
 
-            <input
-              type="file"
-              accept="application/pdf"
-              onChange={uploadPdf}
+            <label
               style={{
-                fontSize: "16px",
+                display: "inline-block",
+                padding: "10px 18px",
+                background: "#2d6a4f",
+                color: "white",
+                borderRadius: "12px",
+                cursor: "pointer",
+                fontWeight: "600",
+                fontSize: "14px",
+                boxShadow: "0 4px 10px rgba(45,106,79,0.18)",
+                transition: "0.2s",
+                marginTop: "6px",
               }}
-            />
+            >
+              🌿 Choose PDF
+
+              <input
+                type="file"
+                accept="application/pdf"
+                onChange={uploadPdf}
+                style={{
+                  display: "none",
+                }}
+              />
+            </label>
 
             {uploading && (
               <p
@@ -190,6 +250,7 @@ function App() {
                 }
               }}
             />
+
             <div
               style={{
                 display: "flex",
@@ -206,7 +267,12 @@ function App() {
               ].map((q, index) => (
                 <button
                   key={index}
-                  onClick={() => setQuestion(q)}
+                  onClick={() => {
+                    setQuestion(q);
+                    setTimeout(() => {
+                      askQuestion(q);
+                    }, 0);
+                  }}
                   style={{
                     padding: "10px 16px",
                     borderRadius: "999px",
@@ -224,7 +290,7 @@ function App() {
             </div>
 
             <button
-              onClick={askQuestion}
+              onClick={() => askQuestion()}
               style={{
                 marginTop: "20px",
                 padding: "14px 28px",
@@ -347,6 +413,3 @@ function App() {
 }
 
 export default App;
-
-
-

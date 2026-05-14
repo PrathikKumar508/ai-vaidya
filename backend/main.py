@@ -33,10 +33,32 @@ class QuestionRequest(BaseModel):
 def home():
     return {"message": "AI Vaidya backend is running"}
 
-
 @app.post("/upload")
 async def upload_pdf(file: UploadFile = File(...)):
+
+    allowed_keywords = [
+        "ayurveda",
+        "charaka",
+        "samhita",
+        "dosha",
+        "vedic",
+        "ashtanga",
+        "herbal"
+    ]
+
+    filename_lower = file.filename.lower()
+
+    if not any(keyword in filename_lower for keyword in allowed_keywords):
+        return {
+            "message": "Please upload Ayurveda-related PDFs only."
+        }
+
     file_path = os.path.join(UPLOAD_DIR, file.filename)
+    if os.path.exists(file_path):
+        return {
+            "message": "PDF already uploaded",
+            "filename": file.filename
+        }
 
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
