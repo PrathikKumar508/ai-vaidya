@@ -183,7 +183,45 @@ function App() {
               placeholder="Example: What are the three doshas in Ayurveda?"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  askQuestion();
+                }
+              }}
             />
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "12px",
+                marginTop: "18px",
+              }}
+            >
+              {[
+                "What are the three doshas?",
+                "How does Ayurveda define health?",
+                "Explain Vata imbalance.",
+                "What foods aggravate Pitta?",
+              ].map((q, index) => (
+                <button
+                  key={index}
+                  onClick={() => setQuestion(q)}
+                  style={{
+                    padding: "10px 16px",
+                    borderRadius: "999px",
+                    border: "1px solid #bdd7b6",
+                    background: "#f4fbf1",
+                    color: "#245233",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                    transition: "0.2s",
+                  }}
+                >
+                  🌿 {q}
+                </button>
+              ))}
+            </div>
 
             <button
               onClick={askQuestion}
