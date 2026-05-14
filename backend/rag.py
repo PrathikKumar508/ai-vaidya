@@ -31,7 +31,6 @@ def reload_vectorstore():
         chunks = pickle.load(f)
 
 
-reload_vectorstore()
 
 
 def retrieve_relevant_chunks(question, top_k=2):

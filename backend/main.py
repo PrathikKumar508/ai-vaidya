@@ -4,13 +4,14 @@ import shutil
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from ingest import build_vectorstore
 
 from ingest import build_vectorstore
 from rag import generate_answer, reload_vectorstore
 
 app = FastAPI()
+
 build_vectorstore()
+reload_vectorstore()
 
 app.add_middleware(
     CORSMiddleware,
