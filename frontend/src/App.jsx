@@ -221,9 +221,6 @@ setTimeout(() => setUploadProgress(75), 1800);
               📚 Upload Ayurveda PDF
             </h2>
 
-          
-            
-              🌿 Choose PDF
             <label
               style={{
                 display: "inline-block",
@@ -254,7 +251,7 @@ setTimeout(() => setUploadProgress(75), 1800);
               />
             </label>
             
-
+            
             {uploading && (
               <div
             style={{
