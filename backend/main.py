@@ -34,7 +34,7 @@ if pdfs:
 
 class QuestionRequest(BaseModel):
     question: str
-
+    selected_pdfs: list[str] = []
 
 @app.get("/")
 def home():
@@ -125,7 +125,7 @@ def delete_pdf(filename: str):
 
 @app.post("/ask")
 def ask_question(request: QuestionRequest):
-    answer, sources = generate_answer(request.question)
+    answer, sources = generate_answer(request.question, request.selected_pdfs)
 
     return {
         "answer": answer,

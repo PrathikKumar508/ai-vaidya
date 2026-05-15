@@ -8,6 +8,7 @@ function App() {
   const [uploading, setUploading] = useState(false);
   const [pdfs, setPdfs] = useState([]);
   const [uploadProgress, setUploadProgress] = useState(0);  
+  const [selectedPdfs, setSelectedPdfs] = useState([]);
 
   const fetchPdfs = async () => {
   try {
@@ -82,7 +83,10 @@ setTimeout(() => setUploadProgress(75), 1800);
 
   const askQuestion = async (customQuestion = question) => {
     if (!customQuestion) return;
-
+    if (pdfs.length > 0 && selectedPdfs.length === 0) {
+      alert("Please select at least one PDF to answer from.");
+      return;
+    }
     setLoading(true);
 
     try {
@@ -93,6 +97,7 @@ setTimeout(() => setUploadProgress(75), 1800);
         },
         body: JSON.stringify({
           question: customQuestion,
+           selected_pdfs: selectedPdfs,
         }),
       });
 
@@ -111,6 +116,14 @@ setTimeout(() => setUploadProgress(75), 1800);
     }
 
     setLoading(false);
+  };
+
+  const togglePdfSelection = (pdf) => {
+    if (selectedPdfs.includes(pdf)) {
+      setSelectedPdfs(selectedPdfs.filter((item) => item !== pdf));
+    } else {
+      setSelectedPdfs([...selectedPdfs, pdf]);
+    }
   };
 
   return (
@@ -327,7 +340,15 @@ setTimeout(() => setUploadProgress(75), 1800);
                 color: "#233428",
               }}
             >
-              <span>📄 {pdf}</span>
+            <span>
+            <input
+              type="checkbox"
+              checked={selectedPdfs.includes(pdf)}
+              onChange={() => togglePdfSelection(pdf)}
+              style={{ marginRight: "10px" }}
+            />
+            📄 {pdf}
+            </span>
 
               <button
                 onClick={() => deletePdf(pdf)}
@@ -545,3 +566,4 @@ setTimeout(() => setUploadProgress(75), 1800);
 }
 
 export default App;
+

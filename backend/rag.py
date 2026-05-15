@@ -32,61 +32,70 @@ def reload_vectorstore():
 
 
 
+def retrieve_relevant_chunks(question, selected_pdfs=None, top_k=3):
+    if selected_pdfs is None:
+        selected_pdfs = []
 
-def retrieve_relevant_chunks(question, top_k=2):
     question_embedding = model.encode([question])
     question_embedding = np.array(question_embedding).astype("float32")
 
-    distances, indices = index.search(question_embedding, top_k)
+    search_k = min(len(chunks), 20)
+
+    distances, indices = index.search(question_embedding, search_k)
 
     retrieved_chunks = []
 
     for idx in indices[0]:
-        retrieved_chunks.append(chunks[idx])
+        chunk = chunks[idx]
+
+        if selected_pdfs and chunk["pdf"] not in selected_pdfs:
+            continue
+
+        retrieved_chunks.append(chunk)
+
+        if len(retrieved_chunks) == top_k:
+            break
 
     return retrieved_chunks
 
 
-def generate_answer(question):
+def generate_answer(question, selected_pdfs=None):
     if index is None or chunks is None or len(chunks) == 0:
         return "No Ayurveda PDFs are currently uploaded. Please upload a PDF first.", []
-    retrieved_chunks = retrieve_relevant_chunks(question)
+
+    retrieved_chunks = retrieve_relevant_chunks(question, selected_pdfs)
+
+    if not retrieved_chunks:
+        return "I could not find this in the selected uploaded Ayurveda PDFs.", []
 
     context = "\n\n".join([chunk["text"] for chunk in retrieved_chunks])
 
     prompt = f"""
-    Answer only from the context. If not found, say:
-    "I could not find this in the uploaded Ayurveda text."
+Answer only from the context. If not found, say:
+"I could not find this in the uploaded Ayurveda text."
 
-    Context:
-    {context}
+Context:
+{context}
 
-    Question:
-    {question}
+Question:
+{question}
 
-    Give a clear answer in 3-4 lines.
-    """
+Give a clear answer in 5-7 lines.
+"""
 
-    try:
-        response = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ],
-            temperature=0.2,
-            max_tokens=150
-            
+    response = client.chat.completions.create(
+        model="llama-3.1-8b-instant",
+        messages=[
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        temperature=0.2,
+        max_tokens=350
+    )
 
-        )
-
-        answer = response.choices[0].message.content
-
-    except Exception:
-        answer = "The AI service is temporarily unavailable. Please try again."
-        return answer, []
+    answer = response.choices[0].message.content
 
     sources = []
 
