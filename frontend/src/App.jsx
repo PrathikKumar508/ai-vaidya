@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 function App() {
+  const [showSplash, setShowSplash] = useState(true);
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const [sources, setSources] = useState([]);
@@ -44,6 +45,13 @@ const deletePdf = async (filename) => {
 
 useEffect(() => {
   fetchPdfs();
+}, []);
+useEffect(() => {
+  const timer = setTimeout(() => {
+    setShowSplash(false);
+  }, 1800);
+
+  return () => clearTimeout(timer);
 }, []);
 
 const uploadPdf = async (e) => {
@@ -125,6 +133,69 @@ setTimeout(() => setUploadProgress(75), 1800);
       setSelectedPdfs([...selectedPdfs, pdf]);
     }
   };
+  if (showSplash) {
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "linear-gradient(to bottom right, #f4f8f0, #dcefd8)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        fontFamily: "Arial",
+      }}
+    >
+      <div
+        style={{
+          textAlign: "center",
+          animation: "splashZoom 1.8s ease forwards",
+        }}
+      >
+        <div style={{ fontSize: "90px" }}>🌿</div>
+        <h1
+          style={{
+            fontSize: "64px",
+            color: "#1f4d2e",
+            margin: "10px 0",
+          }}
+        >
+          AI Vaidya
+        </h1>
+        <p
+          style={{
+            color: "#4d6b57",
+            fontSize: "20px",
+          }}
+        >
+          Ayurvedic Knowledge Assistant
+        </p>
+      </div>
+
+      <style>
+        {`
+          @keyframes splashZoom {
+            0% {
+              opacity: 0;
+              transform: scale(1.4);
+            }
+            30% {
+              opacity: 1;
+              transform: scale(1);
+            }
+            80% {
+              opacity: 1;
+              transform: scale(1);
+            }
+            100% {
+              opacity: 0;
+              transform: scale(0.7);
+            }
+          }
+        `}
+      </style>
+    </div>
+  );
+}
 
   return (
     <div
