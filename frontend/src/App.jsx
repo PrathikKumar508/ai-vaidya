@@ -237,15 +237,35 @@ setTimeout(() => setUploadProgress(75), 1800);
               }}
             >
               🌿 Choose PDF
+            <label
+              style={{
+                display: "inline-block",
+                padding: "10px 18px",
+                background: uploading ? "#7aa88f" : "#2d6a4f",
+                color: "white",
+                borderRadius: "12px",
+                cursor: uploading ? "not-allowed" : "pointer",
+                fontWeight: "600",
+                fontSize: "14px",
+                boxShadow: "0 4px 10px rgba(45,106,79,0.18)",
+                transition: "0.2s",
+                marginTop: "6px",
+                opacity: uploading ? 0.7 : 1,
+                pointerEvents: uploading ? "none" : "auto",
+              }}
+            >
+              {uploading ? "🌿 Processing PDF..." : "🌿 Choose PDF"}
 
               <input
                 type="file"
                 accept="application/pdf"
                 onChange={uploadPdf}
+                disabled={uploading}
                 style={{
                   display: "none",
                 }}
               />
+            </label>
             </label>
 
             {uploading && (
