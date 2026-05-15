@@ -324,6 +324,43 @@ setTimeout(() => setUploadProgress(75), 1800);
             border: "1px solid #d7e8d1",
           }}
         >
+        <div
+            style={{
+              marginBottom: "15px",
+              display: "flex",
+              gap: "10px",
+            }}
+          >
+            <button
+              onClick={() => setSelectedPdfs(pdfs)}
+              style={{
+                padding: "8px 14px",
+                borderRadius: "10px",
+                border: "none",
+                background: "#2d6a4f",
+                color: "white",
+                cursor: "pointer",
+                fontWeight: "bold",
+              }}
+            >
+              Select All
+            </button>
+
+            <button
+              onClick={() => setSelectedPdfs([])}
+              style={{
+                padding: "8px 14px",
+                borderRadius: "10px",
+                border: "none",
+                background: "#b23b3b",
+                color: "white",
+                cursor: "pointer",
+                fontWeight: "bold",
+              }}
+            >
+              Clear Selection
+            </button>
+          </div>
           <h2 style={{ color: "#245233", marginBottom: "15px" }}>
             📖 Uploaded Knowledge Base
           </h2>
