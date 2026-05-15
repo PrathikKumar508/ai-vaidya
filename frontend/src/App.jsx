@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
   const [question, setQuestion] = useState("");
@@ -6,6 +6,43 @@ function App() {
   const [sources, setSources] = useState([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [pdfs, setPdfs] = useState([]);
+
+  const fetchPdfs = async () => {
+  try {
+    const response = await fetch("https://ai-vaidya-production.up.railway.app/pdfs");
+    const data = await response.json();
+    setPdfs(data.pdfs || []);
+  } catch (error) {
+    console.error(error);
+    setPdfs([]);
+  }
+};
+
+const deletePdf = async (filename) => {
+  const confirmDelete = window.confirm(`Delete ${filename}?`);
+  if (!confirmDelete) return;
+
+  try {
+    const response = await fetch(
+      `https://ai-vaidya-production.up.railway.app/pdfs/${filename}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    const data = await response.json();
+    alert(data.message);
+    fetchPdfs();
+  } catch (error) {
+    console.error(error);
+    alert("Error deleting PDF");
+  }
+};
+
+useEffect(() => {
+  fetchPdfs();
+}, []);
 
 const uploadPdf = async (e) => {
   const input = e.target;
@@ -26,6 +63,7 @@ const uploadPdf = async (e) => {
 
     const data = await response.json();
     alert(data.message);
+    fetchPdfs();
   } catch (error) {
     console.error(error);
     alert("Error uploading PDF");
@@ -35,6 +73,52 @@ const uploadPdf = async (e) => {
 
   input.value = "";
 };
+{pdfs.length > 0 && (
+  <div
+    style={{
+      background: "#f7fcf5",
+      padding: "20px",
+      borderRadius: "18px",
+      marginBottom: "35px",
+      border: "1px solid #d7e8d1",
+    }}
+  >
+    <h2 style={{ color: "#245233", marginBottom: "15px" }}>
+      📖 Uploaded Knowledge Base
+    </h2>
+
+    {pdfs.map((pdf, index) => (
+      <div
+        key={index}
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "12px 0",
+          borderBottom: "1px solid #d7e8d1",
+          color: "#233428",
+        }}
+      >
+        <span>📄 {pdf}</span>
+
+        <button
+          onClick={() => deletePdf(pdf)}
+          style={{
+            padding: "8px 14px",
+            borderRadius: "10px",
+            border: "none",
+            background: "#b23b3b",
+            color: "white",
+            cursor: "pointer",
+            fontWeight: "bold",
+          }}
+        >
+          Remove
+        </button>
+      </div>
+    ))}
+  </div>
+)}
 
   const askQuestion = async (customQuestion = question) => {
     if (!customQuestion) return;
@@ -290,22 +374,23 @@ const uploadPdf = async (e) => {
             </div>
 
             <button
-              onClick={() => askQuestion()}
-              style={{
-                marginTop: "20px",
-                padding: "14px 28px",
-                fontSize: "16px",
-                cursor: "pointer",
-                borderRadius: "14px",
-                border: "none",
-                background: "#2d6a4f",
-                color: "white",
-                fontWeight: "bold",
-                boxShadow: "0 6px 15px rgba(45,106,79,0.25)",
-              }}
-            >
-              Ask AI Vaidya
-            </button>
+            onClick={() => askQuestion()}
+            disabled={loading}
+            style={{
+              marginTop: "20px",
+              padding: "14px 28px",
+              fontSize: "16px",
+              cursor: loading ? "not-allowed" : "pointer",
+              borderRadius: "14px",
+              border: "none",
+              background: loading ? "#7aa88f" : "#2d6a4f",
+              color: "white",
+              fontWeight: "bold",
+              boxShadow: "0 6px 15px rgba(45,106,79,0.25)",
+            }}
+          >
+            {loading ? "🌿 Generating..." : "Ask AI Vaidya"}
+          </button>
           </div>
 
           {loading && (

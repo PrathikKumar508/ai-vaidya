@@ -70,7 +70,51 @@ async def upload_pdf(file: UploadFile = File(...)):
         "message": "PDF uploaded and indexed successfully",
         "filename": file.filename
     }
+@app.get("/pdfs")
+def list_pdfs():
+    pdfs = [
+        file for file in os.listdir(UPLOAD_DIR)
+        if file.lower().endswith(".pdf")
+    ]
 
+    return {"pdfs": pdfs}
+
+@app.get("/pdfs")
+def list_pdfs():
+    pdfs = [
+        file for file in os.listdir(UPLOAD_DIR)
+        if file.lower().endswith(".pdf")
+    ]
+
+    return {"pdfs": pdfs}
+
+
+@app.delete("/pdfs/{filename}")
+def delete_pdf(filename: str):
+    file_path = os.path.join(UPLOAD_DIR, filename)
+
+    if not os.path.exists(file_path):
+        return {"message": "PDF not found"}
+
+    os.remove(file_path)
+
+    remaining_pdfs = [
+        file for file in os.listdir(UPLOAD_DIR)
+        if file.lower().endswith(".pdf")
+    ]
+
+    if remaining_pdfs:
+        build_vectorstore()
+        reload_vectorstore()
+        return {"message": "PDF deleted and vectorstore updated"}
+
+    if os.path.exists("vectorstore/ayurveda.index"):
+        os.remove("vectorstore/ayurveda.index")
+
+    if os.path.exists("vectorstore/chunks.pkl"):
+        os.remove("vectorstore/chunks.pkl")
+
+    return {"message": "PDF deleted. No PDFs left in knowledge base."}
 
 @app.post("/ask")
 def ask_question(request: QuestionRequest):
@@ -80,3 +124,30 @@ def ask_question(request: QuestionRequest):
         "answer": answer,
         "sources": sources
     }
+
+@app.delete("/pdfs/{filename}")
+def delete_pdf(filename: str):
+    file_path = os.path.join(UPLOAD_DIR, filename)
+
+    if not os.path.exists(file_path):
+        return {"message": "PDF not found"}
+
+    os.remove(file_path)
+
+    remaining_pdfs = [
+        file for file in os.listdir(UPLOAD_DIR)
+        if file.lower().endswith(".pdf")
+    ]
+
+    if remaining_pdfs:
+        build_vectorstore()
+        reload_vectorstore()
+        return {"message": "PDF deleted and vectorstore updated"}
+    else:
+        if os.path.exists("vectorstore/ayurveda.index"):
+            os.remove("vectorstore/ayurveda.index")
+
+        if os.path.exists("vectorstore/chunks.pkl"):
+            os.remove("vectorstore/chunks.pkl")
+
+        return {"message": "PDF deleted. No PDFs left in knowledge base."}
