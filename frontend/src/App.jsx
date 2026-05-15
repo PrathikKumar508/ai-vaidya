@@ -7,6 +7,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [pdfs, setPdfs] = useState([]);
+  const [uploadProgress, setUploadProgress] = useState(0);  
 
   const fetchPdfs = async () => {
   try {
@@ -54,6 +55,10 @@ const uploadPdf = async (e) => {
   formData.append("file", file);
 
   setUploading(true);
+  setUploadProgress(20);
+
+setTimeout(() => setUploadProgress(45), 600);
+setTimeout(() => setUploadProgress(75), 1800);
 
   try {
     const response = await fetch("https://ai-vaidya-production.up.railway.app/upload", {
@@ -68,9 +73,9 @@ const uploadPdf = async (e) => {
     console.error(error);
     alert("Error uploading PDF");
   }
-
+  setUploadProgress(100);
   setUploading(false);
-
+  setTimeout(() => setUploadProgress(0), 800);
   input.value = "";
 };
 
@@ -244,16 +249,52 @@ const uploadPdf = async (e) => {
             </label>
 
             {uploading && (
-              <p
+              <div
+            style={{
+              marginTop: "16px",
+              background: "#f7fcf5",
+              padding: "16px",
+              borderRadius: "14px",
+              border: "1px solid #d7e8d1",
+              color: "#245233",
+              fontWeight: "bold",
+            }}
+          >
+            {uploadProgress < 45 && "📄 Uploading PDF..."}
+            {uploadProgress >= 45 && uploadProgress < 75 && "📖 Extracting and chunking text..."}
+            {uploadProgress >= 75 && "🧠 Creating embeddings and updating vector database..."}
+
+            <div
+              style={{
+                height: "8px",
+                background: "#d7e8d1",
+                borderRadius: "999px",
+                marginTop: "12px",
+                overflow: "hidden",
+              }}
+            >
+              <div
                 style={{
-                  marginTop: "12px",
-                  color: "#245233",
-                  fontWeight: "bold",
+                  height: "100%",
+                  width: `${uploadProgress}%`,
+                  background: "#2d6a4f",
+                  borderRadius: "999px",
+                  transition: "0.5s",
                 }}
-              >
-                Processing PDF and generating embeddings...
-              </p>
-            )}
+              />
+            </div>
+
+            <div
+              style={{
+                marginTop: "8px",
+                fontSize: "13px",
+                color: "#587062",
+              }}
+            >
+              {uploadProgress}% complete
+            </div>
+              </div>
+            )}  
           </div>
           
           {pdfs.length > 0 && (
