@@ -10,15 +10,6 @@ from rag import generate_answer, reload_vectorstore
 
 app = FastAPI()
 
-pdfs = [
-    file for file in os.listdir(UPLOAD_DIR)
-    if file.lower().endswith(".pdf")
-]
-
-if pdfs:
-    build_vectorstore()
-    reload_vectorstore()
-    
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -30,6 +21,16 @@ app.add_middleware(
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+
+pdfs = [
+    file for file in os.listdir(UPLOAD_DIR)
+    if file.lower().endswith(".pdf")
+]
+
+if pdfs:
+    build_vectorstore()
+    reload_vectorstore()
+    
 
 class QuestionRequest(BaseModel):
     question: str
