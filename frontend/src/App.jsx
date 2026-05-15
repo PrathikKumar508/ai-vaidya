@@ -23,6 +23,8 @@ function App() {
 };
 
 const deletePdf = async (filename) => {
+  if (loading) return;
+
   const confirmDelete = window.confirm(`Delete ${filename}?`);
   if (!confirmDelete) return;
 
@@ -36,6 +38,8 @@ const deletePdf = async (filename) => {
 
     const data = await response.json();
     alert(data.message);
+
+    setSelectedPdfs((prev) => prev.filter((pdf) => pdf !== filename));
     fetchPdfs();
   } catch (error) {
     console.error(error);
@@ -458,21 +462,23 @@ setTimeout(() => setUploadProgress(75), 1800);
             />
             📄 {pdf}
             </span>
+            <button
+            onClick={() => deletePdf(pdf)}
+            disabled={loading}
+            style={{
+              padding: "8px 14px",
+              borderRadius: "10px",
+              border: "none",
+              background: loading ? "#999" : "#b23b3b",
+              color: "white",
+              cursor: loading ? "not-allowed" : "pointer",
+              fontWeight: "bold",
+              opacity: loading ? 0.6 : 1,
+            }}
+>
+              Remove
+            </button>
 
-              <button
-                onClick={() => deletePdf(pdf)}
-                style={{
-                  padding: "8px 14px",
-                  borderRadius: "10px",
-                  border: "none",
-                  background: "#b23b3b",
-                  color: "white",
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                }}
-              >
-                Remove
-              </button>
             </div>
             ))}
           </div>
