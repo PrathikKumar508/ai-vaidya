@@ -73,52 +73,7 @@ const uploadPdf = async (e) => {
 
   input.value = "";
 };
-{pdfs.length > 0 && (
-  <div
-    style={{
-      background: "#f7fcf5",
-      padding: "20px",
-      borderRadius: "18px",
-      marginBottom: "35px",
-      border: "1px solid #d7e8d1",
-    }}
-  >
-    <h2 style={{ color: "#245233", marginBottom: "15px" }}>
-      📖 Uploaded Knowledge Base
-    </h2>
 
-    {pdfs.map((pdf, index) => (
-      <div
-        key={index}
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: "12px 0",
-          borderBottom: "1px solid #d7e8d1",
-          color: "#233428",
-        }}
-      >
-        <span>📄 {pdf}</span>
-
-        <button
-          onClick={() => deletePdf(pdf)}
-          style={{
-            padding: "8px 14px",
-            borderRadius: "10px",
-            border: "none",
-            background: "#b23b3b",
-            color: "white",
-            cursor: "pointer",
-            fontWeight: "bold",
-          }}
-        >
-          Remove
-        </button>
-      </div>
-    ))}
-  </div>
-)}
 
   const askQuestion = async (customQuestion = question) => {
     if (!customQuestion) return;
@@ -300,6 +255,53 @@ const uploadPdf = async (e) => {
               </p>
             )}
           </div>
+          
+          {pdfs.length > 0 && (
+        <div
+          style={{
+            background: "#f7fcf5",
+            padding: "20px",
+            borderRadius: "18px",
+            marginBottom: "35px",
+            border: "1px solid #d7e8d1",
+          }}
+        >
+          <h2 style={{ color: "#245233", marginBottom: "15px" }}>
+            📖 Uploaded Knowledge Base
+          </h2>
+
+          {pdfs.map((pdf, index) => (
+            <div
+              key={index}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "12px 0",
+                borderBottom: "1px solid #d7e8d1",
+                color: "#233428",
+              }}
+            >
+              <span>📄 {pdf}</span>
+
+              <button
+                onClick={() => deletePdf(pdf)}
+                style={{
+                  padding: "8px 14px",
+                  borderRadius: "10px",
+                  border: "none",
+                  background: "#b23b3b",
+                  color: "white",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                }}
+              >
+                Remove
+              </button>
+            </div>
+            ))}
+          </div>
+        )}
 
           <div>
             <h2
