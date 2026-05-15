@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from ingest import build_vectorstore
 from rag import generate_answer, reload_vectorstore
 
+
 app = FastAPI()
 
 app.add_middleware(
@@ -19,6 +20,9 @@ app.add_middleware(
 )
 
 UPLOAD_DIR = "uploads"
+VECTOR_INDEX = "vectorstore/ayurveda.index"
+VECTOR_CHUNKS = "vectorstore/chunks.pkl"
+
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
@@ -28,27 +32,40 @@ pdfs = [
 ]
 
 if pdfs:
-    if os.path.exists("vectorstore/ayurveda.index") and os.path.exists("vectorstore/chunks.pkl"):
+    if os.path.exists(VECTOR_INDEX) and os.path.exists(VECTOR_CHUNKS):
         reload_vectorstore()
     else:
         build_vectorstore()
         reload_vectorstore()
 
+
 class QuestionRequest(BaseModel):
     question: str
     selected_pdfs: list[str] = []
+
 
 @app.get("/")
 def home():
     return {"message": "AI Vaidya backend is running"}
 
+
+@app.get("/pdfs")
+def list_pdfs():
+    pdfs = [
+        file for file in os.listdir(UPLOAD_DIR)
+        if file.lower().endswith(".pdf")
+    ]
+
+    return {"pdfs": pdfs}
+
+
 @app.post("/upload")
 async def upload_pdf(file: UploadFile = File(...)):
-
     allowed_keywords = [
         "ayurveda",
         "charaka",
         "samhita",
+        "acharya",
         "dosha",
         "vedic",
         "ashtanga",
@@ -57,45 +74,39 @@ async def upload_pdf(file: UploadFile = File(...)):
 
     filename_lower = file.filename.lower()
 
+    if not filename_lower.endswith(".pdf"):
+        return {"message": "Only PDF files are allowed."}
+
     if not any(keyword in filename_lower for keyword in allowed_keywords):
-        return {
-            "message": "Please upload Ayurveda-related PDFs only."
-        }
+        return {"message": "Please upload Ayurveda-related PDFs only."}
 
     file_path = os.path.join(UPLOAD_DIR, file.filename)
+
     if os.path.exists(file_path):
         return {
             "message": "PDF already uploaded",
             "filename": file.filename
         }
 
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    try:
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
 
-    build_vectorstore()
-    reload_vectorstore()
+        build_vectorstore()
+        reload_vectorstore()
 
-    return {
-        "message": "PDF uploaded and indexed successfully",
-        "filename": file.filename
-    }
-@app.get("/pdfs")
-def list_pdfs():
-    pdfs = [
-        file for file in os.listdir(UPLOAD_DIR)
-        if file.lower().endswith(".pdf")
-    ]
+        return {
+            "message": "PDF uploaded and indexed successfully",
+            "filename": file.filename
+        }
 
-    return {"pdfs": pdfs}
+    except Exception as e:
+        if os.path.exists(file_path):
+            os.remove(file_path)
 
-@app.get("/pdfs")
-def list_pdfs():
-    pdfs = [
-        file for file in os.listdir(UPLOAD_DIR)
-        if file.lower().endswith(".pdf")
-    ]
-
-    return {"pdfs": pdfs}
+        return {
+            "message": f"Error processing PDF: {str(e)}"
+        }
 
 
 @app.delete("/pdfs/{filename}")
@@ -117,13 +128,14 @@ def delete_pdf(filename: str):
         reload_vectorstore()
         return {"message": "PDF deleted and vectorstore updated"}
 
-    if os.path.exists("vectorstore/ayurveda.index"):
-        os.remove("vectorstore/ayurveda.index")
+    if os.path.exists(VECTOR_INDEX):
+        os.remove(VECTOR_INDEX)
 
-    if os.path.exists("vectorstore/chunks.pkl"):
-        os.remove("vectorstore/chunks.pkl")
+    if os.path.exists(VECTOR_CHUNKS):
+        os.remove(VECTOR_CHUNKS)
 
     return {"message": "PDF deleted. No PDFs left in knowledge base."}
+
 
 @app.post("/ask")
 def ask_question(request: QuestionRequest):
@@ -133,30 +145,3 @@ def ask_question(request: QuestionRequest):
         "answer": answer,
         "sources": sources
     }
-
-@app.delete("/pdfs/{filename}")
-def delete_pdf(filename: str):
-    file_path = os.path.join(UPLOAD_DIR, filename)
-
-    if not os.path.exists(file_path):
-        return {"message": "PDF not found"}
-
-    os.remove(file_path)
-
-    remaining_pdfs = [
-        file for file in os.listdir(UPLOAD_DIR)
-        if file.lower().endswith(".pdf")
-    ]
-
-    if remaining_pdfs:
-        build_vectorstore()
-        reload_vectorstore()
-        return {"message": "PDF deleted and vectorstore updated"}
-    else:
-        if os.path.exists("vectorstore/ayurveda.index"):
-            os.remove("vectorstore/ayurveda.index")
-
-        if os.path.exists("vectorstore/chunks.pkl"):
-            os.remove("vectorstore/chunks.pkl")
-
-        return {"message": "PDF deleted. No PDFs left in knowledge base."}

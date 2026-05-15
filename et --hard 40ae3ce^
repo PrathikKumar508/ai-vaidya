@@ -1,0 +1,32 @@
+[33m52fcb89[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m fix chucnk extraction and optimisation
+[33mea1b41f[m limit pdf pages and speed up embeddings
+[33mdddb74e[m major improvements
+[33m621923d[m rollback  improvement
+[33m40ae3ce[m improve embedding progress message
+[33mea165a0[m improve pdf removal behavior during generation
+[33m34a4a47[m improve splash screen animation and spacing
+[33m4c99209[m add splash screen animation
+[33m558ceaf[m optimize vectorstore loading and persistence
+[33m49b7a96[m add selective pdf querying feature
+[33m75e6783[m add pdf selection for question answering
+[33m3c60a30[m fix duplicate upload button 2
+[33md4ea3bd[m fix duplicate upload button
+[33m04c7664[m disable pdf upload during embedding
+[33m497c5b1[m improve pdf upload progress UI
+[33mfe19d17[m fix upload directory initialization
+[33m62d4dfe[m fix vectorstore rebuild logic
+[33m6c8b319[m remove default uploaded pdf
+[33m9434fc2[m avoid rebuilding vectorstore on startup
+[33m2f082fa[m fix pdf delete url encoding
+[33m2caadb8[m show uploaded pdfs in UI
+[33m965a8fd[m add pdf management endpoints
+[33mddf3595[m connect frontend to railway backend
+[33m76c717a[m prepare backend for railway deployment
+[33m2032e0a[m improve UI and chat interaction
+[33mabd949e[m added readme
+[33m7daab73[m fix backend startup
+[33m86e5bdd[m auto build vectorstore
+[33m31f3390[m force cpu torch
+[33md6e69dc[m fix requirements
+[33me2fffcd[m requirements
+[33m83c27ed[m first commit
