@@ -49,7 +49,7 @@ useEffect(() => {
 useEffect(() => {
   const timer = setTimeout(() => {
     setShowSplash(false);
-  }, 1800);
+  }, 2800);
 
   return () => clearTimeout(timer);
 }, []);
@@ -148,7 +148,7 @@ setTimeout(() => setUploadProgress(75), 1800);
       <div
         style={{
           textAlign: "center",
-          animation: "splashZoom 1.8s ease forwards",
+          animation: "splashZoom 2.8s ease forwards",
         }}
       >
         <div style={{ fontSize: "90px" }}>🌿</div>
@@ -156,7 +156,8 @@ setTimeout(() => setUploadProgress(75), 1800);
           style={{
             fontSize: "64px",
             color: "#1f4d2e",
-            margin: "10px 0",
+                margin: "14px 0 22px 0",
+                lineHeight: "1.2",
           }}
         >
           AI Vaidya
