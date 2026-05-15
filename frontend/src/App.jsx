@@ -25,7 +25,7 @@ const deletePdf = async (filename) => {
 
   try {
     const response = await fetch(
-      `https://ai-vaidya-production.up.railway.app/pdfs/${filename}`,
+      `https://ai-vaidya-production.up.railway.app/pdfs/${encodeURIComponent(filename)}`,
       {
         method: "DELETE",
       }
