@@ -10,12 +10,15 @@ from rag import generate_answer, reload_vectorstore
 
 app = FastAPI()
 
-if os.path.exists("vectorstore/ayurveda.index") and os.path.exists("vectorstore/chunks.pkl"):
-    reload_vectorstore()
-else:
+pdfs = [
+    file for file in os.listdir(UPLOAD_DIR)
+    if file.lower().endswith(".pdf")
+]
+
+if pdfs:
     build_vectorstore()
     reload_vectorstore()
-
+    
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

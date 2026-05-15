@@ -48,6 +48,8 @@ def retrieve_relevant_chunks(question, top_k=2):
 
 
 def generate_answer(question):
+    if index is None or chunks is None or len(chunks) == 0:
+        return "No Ayurveda PDFs are currently uploaded. Please upload a PDF first.", []
     retrieved_chunks = retrieve_relevant_chunks(question)
 
     context = "\n\n".join([chunk["text"] for chunk in retrieved_chunks])
