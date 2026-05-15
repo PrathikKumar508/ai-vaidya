@@ -26,17 +26,6 @@ VECTOR_CHUNKS = "vectorstore/chunks.pkl"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
-pdfs = [
-    file for file in os.listdir(UPLOAD_DIR)
-    if file.lower().endswith(".pdf")
-]
-
-if pdfs:
-    if os.path.exists(VECTOR_INDEX) and os.path.exists(VECTOR_CHUNKS):
-        reload_vectorstore()
-    else:
-        build_vectorstore()
-        reload_vectorstore()
 
 
 class QuestionRequest(BaseModel):
