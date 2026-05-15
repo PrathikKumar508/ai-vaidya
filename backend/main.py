@@ -28,9 +28,11 @@ pdfs = [
 ]
 
 if pdfs:
-    build_vectorstore()
-    reload_vectorstore()
-    
+    if os.path.exists("vectorstore/ayurveda.index") and os.path.exists("vectorstore/chunks.pkl"):
+        reload_vectorstore()
+    else:
+        build_vectorstore()
+        reload_vectorstore()
 
 class QuestionRequest(BaseModel):
     question: str
